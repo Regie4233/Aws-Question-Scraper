@@ -2,6 +2,7 @@ import requests
 import json
 from bs4 import BeautifulSoup
 def parseme(url):
+    print('parsing')
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'lxml')
     pnt = soup.select('ol[dir] > li')
@@ -17,18 +18,19 @@ def parseme(url):
         elemDetails = item.find('details')
 
         answerString = elemDetails.get_text("")
-
-
+        print(answerString.replace(",", "").replace(" ","").replace("Answer", "").replace("Correctanswer:", "").strip())
+        # print(answerString)
+        
         prompt = elemP.string
         for o in elemLi:
             options.append(o.string[3:])
 
         findString = 'Choose TWO'
         if findString in prompt:
-            correctAnswer.append(answerString[-2])
-            correctAnswer.append(answerString[-5])
+            correctAnswer.append(answerString[1].upper())
+            correctAnswer.append(answerString[2].upper())
         else:
-            correctAnswer.append(answerString[-2])
+            correctAnswer.append(answerString[1].upper())
 
         examList.append(questionItem(prompt, options, correctAnswer))
 
