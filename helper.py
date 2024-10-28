@@ -25,9 +25,10 @@ def parseme(url):
         answer = answerString.replace(",", "").replace(" ","").replace("Answer", "").replace("Correctanswer:", "").strip()
       #  print(answer)
 
-        child = elemDetails.findChild('p', recursive=False)
+        child = elemDetails.find('p')
         #ansElement = child[0]
-        print(child)
+        #txt = child.string
+        print(elemP.string)
 
 
         
