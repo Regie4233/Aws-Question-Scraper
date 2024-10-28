@@ -2,7 +2,7 @@ import requests
 import json
 from bs4 import BeautifulSoup
 def parseme(url):
-    print('parsing')
+    print('parsing: ' + url)
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'lxml')
     pnt = soup.select('ol[dir] > li')
