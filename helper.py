@@ -25,12 +25,17 @@ def parseme(url):
         answer = answerString.replace(",", "").replace(" ","").replace("Answer", "").replace("Correctanswer:", "").strip()
       #  print(answer)
 
-        child = elemDetails.findChildren('p', recursive=False)
+        child = elemDetails.findChild('p', recursive=False)
+        #ansElement = child[0]
         print(child)
+
+
         
         prompt = elemP.string
         for o in elemLi:
             options.append(o.string[3:])
+
+        
 
        # findString = 'Choose TWO'
         ansLength = len(answer)
