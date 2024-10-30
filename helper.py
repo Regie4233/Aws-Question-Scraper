@@ -1,15 +1,23 @@
 import requests
 import json
+import time
+import html5lib
 from bs4 import BeautifulSoup
 def parseme(url):
     print('parsing: ' + url)
-    try:
-        r = requests.get(url, timeout=10)
-    except:
-        print(url+' not parsed time out')
-
+    
+    r = requests.get(url, timeout=10)
+    
+    if r.status_code != 200:
+        print('error')
+        return
+    
     soup = BeautifulSoup(r.content, 'html.parser')
+ 
     pnt = soup.select('ol[dir] > li')
+    
+    if(len(pnt) <= 0):
+        return []
 
     examList = []
     for item in pnt:
@@ -18,25 +26,28 @@ def parseme(url):
         correctAnswer = []
 
         elemP = item.find('p')
-        elemLi = item.find_all('li')
+        elemLi = item.select('ul > li:not(details > ul li)')
         elemDetails = item.find('details')
-
-        answerString = elemDetails.get_text("")
-        answer = answerString.replace(",", "").replace(" ","").replace("Answer", "").replace("Correctanswer:", "").strip()
+        # print(elemP.string)
+        # print(elemLi)
+      
       #  print(answer)
-
-        child = elemDetails.find('p')
-        #ansElement = child[0]
-        #txt = child.string
-        print(elemP.string)
-
-
+        answer = ''
+        countAnsElement = elemDetails.findChildren('p', recursive=False)
+        # print(countAnsElement)
+        if len(countAnsElement) >= 1:
+            child = elemDetails.find('p')
+            answer = child.string.replace(",", "").replace(" ","").replace("Answer", "").replace("Correctanswer:", "").replace("Correct:", "").strip()
+            print(answer)
+        else:
+            answerString = elemDetails.get_text("")
+            answer = answerString.replace(",", "").replace(" ","").replace("Answer", "").replace("Correctanswer:", "").strip()
+            print(answer)
+       
         
         prompt = elemP.string
         for o in elemLi:
             options.append(o.string[3:])
-
-        
 
        # findString = 'Choose TWO'
         ansLength = len(answer)
@@ -47,7 +58,7 @@ def parseme(url):
             correctAnswer.append(answer[0].upper())
 
         examList.append(questionItem(prompt, options, correctAnswer))
-
+    print('done parsing')
     return examList
 
 
@@ -61,35 +72,4 @@ class questionItem:
         self.options = options
         self.correctAnswer = correctAnswer
 
-#examList = []
-#for item in pnt:
-#    options = []
- #   prompt = ''
- #   correctAnswer = []
-
-  #  elemP = item.find('p')
-   # elemLi = item.find_all('li')
- #   elemDetails = item.find('details')
-
- #   answerString = elemDetails.get_text("")
-   
-
-  #  prompt = elemP.string
-  #  for o in elemLi:
- #       options.append(o.string[3:])
- #   
-  #  findString = 'Choose TWO'
-  #  if findString in prompt:
-  #      correctAnswer.append(answerString[-2])
-  #      correctAnswer.append(answerString[-5])
- ##   else:
-   #     correctAnswer.append(answerString[-2])
-    
-  #  examList.append(questionItem(prompt, options, correctAnswer))
-
-#for item in examList:
-  #  for opts in item.options:
-  #      print(opts)
- 
-    
     
